@@ -263,8 +263,11 @@ const btnApplyGap = document.getElementById('btn-apply-gap');
 btnSplit.addEventListener('click', () => {
   const id = selection.selectedClipId;
   if (!id) return showToast('分割するクリップを選択してください。', 'warn');
-  const result = projectManager.splitClip(id, engine.getCurrentTime());
-  if (!result) showToast('再生ヘッドがクリップの範囲内にありません。', 'warn');
+
+  // 分割位置は画面に表示されている赤い再生ヘッドと同じ位置を使う。
+  const splitTime = Math.max(0, timeline.playheadTime);
+  const result = projectManager.splitClip(id, splitTime);
+  if (!result) showToast('赤い再生ヘッドがクリップの範囲内にありません。', 'warn');
 });
 
 btnDeleteClip.addEventListener('click', () => {
