@@ -1,4 +1,5 @@
 import { formatTimeShort } from '../utils/formatTime.js';
+import { TRACK_HEADER_WIDTH } from '../utils/constants.js';
 
 /**
  * タイムライン上部のマーカー行の描画と、
@@ -21,11 +22,12 @@ export class MarkerManager {
 
     // タイムライン上のフラグ
     this.rowEl.innerHTML = '';
-    this.rowEl.style.width = `${Math.max(200, (markers.reduce((m, x) => Math.max(m, x.time), 0) + 30) * pxPerSec)}px`;
+    this.rowEl.style.width = `${TRACK_HEADER_WIDTH + Math.max(200, (markers.reduce((m, x) => Math.max(m, x.time), 0) + 30) * pxPerSec)}px`;
     for (const marker of markers) {
       const flag = document.createElement('button');
       flag.className = 'marker-flag';
-      flag.style.left = `${marker.time * pxPerSec}px`;
+      // ルーラー・波形・再生ヘッドと同じ120pxの表示オフセットを使う。
+      flag.style.left = `${TRACK_HEADER_WIDTH + Math.max(0, marker.time) * pxPerSec}px`;
       flag.title = `${marker.icon} ${marker.label} (${formatTimeShort(marker.time)})`;
       flag.textContent = marker.icon;
       flag.setAttribute('aria-label', `マーカー: ${marker.label}`);
