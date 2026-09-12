@@ -17,9 +17,9 @@ import { downloadBlob, isAcceptedAudioFile } from './utils/fileUtils.js';
 import { formatTimeShort } from './utils/formatTime.js';
 import { TRACK_TYPE, MARKER_PRESETS, TOAST_DURATION_MS, PROJECT_FILE_EXTENSION } from './utils/constants.js';
 
-// ---------------------------------------------------------------
+// --------------------------------------------------------------
 // 基盤オブジェクトの組み立て
-// ---------------------------------------------------------------
+// --------------------------------------------------------------
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 const audioLibrary = new AudioLibrary();
