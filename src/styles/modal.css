@@ -1,0 +1,130 @@
+/* ===== モーダル共通 ===== */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: rgba(20, 16, 8, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay[hidden] { display: none; }
+
+.modal {
+  background: var(--panel-bg);
+  color: var(--text);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+  width: 100%;
+  max-width: 520px;
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modal-in 0.14s ease;
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal h2 {
+  margin: 0;
+  padding: 18px 20px 12px;
+  font-size: 18px;
+  font-weight: 800;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.modal-body {
+  padding: 16px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--panel-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.export-option {
+  border: 1px solid var(--panel-border);
+  background: var(--track-bg);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.export-option h3 {
+  margin: 0 0 6px;
+  font-size: 14.5px;
+  font-weight: 800;
+}
+.export-option p {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.export-option .tbtn { margin-right: 8px; margin-top: 4px; }
+
+.export-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.export-progress[hidden] { display: none; }
+
+.progress-bar {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--track-bg);
+  border: 1px solid var(--panel-border);
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+  transition: width 0.15s ease;
+}
+#export-progress-label {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.shortcut-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+.shortcut-table td {
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--panel-border);
+}
+.shortcut-table td:first-child { width: 40%; }
+
+kbd {
+  display: inline-block;
+  background: var(--track-bg);
+  border: 1px solid var(--panel-border);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  padding: 2px 7px;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 700;
+}
+
+.restore-info {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}

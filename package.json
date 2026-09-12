@@ -1,0 +1,18 @@
+{
+  "name": "bunkamix",
+  "version": "1.0.0",
+  "description": "文化祭のダンス・演劇音源を素早く編集するための、初心者向けブラウザ音声編集アプリ",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "vite": "^5.4.10"
+  }
+}

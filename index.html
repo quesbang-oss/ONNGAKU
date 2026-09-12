@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BunkaMix - 文化祭ダンス音源編集</title>
+  <meta name="description" content="文化祭のダンス・演劇音源を、ドラッグ＆ドロップだけで素早く編集できるブラウザアプリ" />
+  <link rel="stylesheet" href="/src/styles/main.css" />
+  <link rel="stylesheet" href="/src/styles/timeline.css" />
+  <link rel="stylesheet" href="/src/styles/player.css" />
+  <link rel="stylesheet" href="/src/styles/modal.css" />
+</head>
+<body>
+  <div id="app" class="app" data-theme="light">
+
+    <header class="toolbar" role="banner">
+      <div class="toolbar-brand">
+        <span class="brand-mark" aria-hidden="true">🎶</span>
+        <span class="brand-name">BunkaMix</span>
+      </div>
+      <div class="toolbar-actions" role="toolbar" aria-label="ファイル操作">
+        <button id="btn-new" class="tbtn" aria-label="新規プロジェクト" title="新規プロジェクト">📁 新規</button>
+        <button id="btn-open" class="tbtn" aria-label="プロジェクトを開く" title="プロジェクトを開く (Ctrl+O)">📂 開く</button>
+        <button id="btn-save" class="tbtn" aria-label="保存" title="保存 (Ctrl+S)">💾 保存</button>
+        <button id="btn-save-as" class="tbtn" aria-label="名前を付けて保存" title="名前を付けて保存">💾 名前を付けて保存</button>
+        <button id="btn-import" class="tbtn" aria-label="音源を追加" title="音源を追加">🎵 音源を追加</button>
+        <span class="tbtn-sep" aria-hidden="true"></span>
+        <button id="btn-undo" class="tbtn" aria-label="元に戻す" title="元に戻す (Ctrl+Z)" disabled>↩ 元に戻す</button>
+        <button id="btn-redo" class="tbtn" aria-label="やり直す" title="やり直す (Ctrl+Y)" disabled>↪ やり直す</button>
+        <span class="tbtn-sep" aria-hidden="true"></span>
+        <button id="btn-normalize" class="tbtn" aria-label="音量を自動調整" title="曲ごとの音量差を自動でならします">🎚 音量自動調整</button>
+        <button id="btn-help" class="tbtn" aria-label="ヘルプ・ショートカット一覧" title="ヘルプ">❓ ヘルプ</button>
+        <button id="btn-theme" class="tbtn" aria-label="ダークモード切り替え" title="ダークモード切り替え">🌓</button>
+      </div>
+      <div class="toolbar-export">
+        <button id="btn-export" class="tbtn tbtn-primary" aria-label="書き出し">💿 書き出し</button>
+        <button id="btn-perform" class="tbtn tbtn-accent" aria-label="本番モードを開く">🎤 本番モード</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside id="setlist-panel" class="setlist-panel" aria-label="セットリスト">
+        <div class="panel-header">
+          <h2>セットリスト</h2>
+          <button id="btn-marker-add" class="small-btn" title="現在位置にマーカーを追加">📍 マーカー追加</button>
+        </div>
+        <ol id="setlist-list" class="setlist-list" aria-label="曲の並び順"></ol>
+        <div class="panel-header" style="margin-top:12px;">
+          <h2>マーカー</h2>
+        </div>
+        <ol id="marker-list" class="marker-list" aria-label="マーカー一覧"></ol>
+      </aside>
+
+      <section id="timeline-section" class="timeline-section" aria-label="タイムライン">
+        <div class="timeline-toolbar">
+          <button id="btn-split" class="small-btn" title="再生ヘッド位置で分割 (S)">✂ 分割</button>
+          <button id="btn-delete-clip" class="small-btn" title="選択中のクリップを削除 (Delete)">🗑 削除</button>
+          <button id="btn-duplicate-clip" class="small-btn" title="複製">📋 複製</button>
+          <span class="tbtn-sep" aria-hidden="true"></span>
+          <label class="small-label">フェードイン
+            <input id="fade-in-input" type="number" min="0" step="0.1" value="0" class="num-input" /> 秒
+          </label>
+          <label class="small-label">フェードアウト
+            <input id="fade-out-input" type="number" min="0" step="0.1" value="0" class="num-input" /> 秒
+          </label>
+          <label class="small-label">音量
+            <input id="clip-volume-input" type="range" min="-40" max="12" step="1" value="0" class="range-input" /> dB
+          </label>
+          <span class="tbtn-sep" aria-hidden="true"></span>
+          <label class="small-label">クロスフェード
+            <select id="crossfade-select" class="select-input">
+              <option value="0">なし</option>
+              <option value="0.5">0.5秒</option>
+              <option value="1">1秒</option>
+              <option value="2">2秒</option>
+              <option value="3">3秒</option>
+              <option value="5">5秒</option>
+            </select>
+          </label>
+          <label class="small-label">曲間の無音
+            <select id="gap-select" class="select-input">
+              <option value="0">0秒</option>
+              <option value="1">1秒</option>
+              <option value="2">2秒</option>
+              <option value="3">3秒</option>
+              <option value="5">5秒</option>
+              <option value="10">10秒</option>
+              <option value="custom">自由入力</option>
+            </select>
+            <input id="gap-custom-input" type="number" min="0" step="0.1" class="num-input" style="display:none" />
+          </label>
+          <button id="btn-apply-gap" class="small-btn">曲間に適用</button>
+          <span class="tbtn-sep" aria-hidden="true"></span>
+          <button id="btn-zoom-out" class="small-btn" aria-label="縮小" title="縮小">🔍−</button>
+          <button id="btn-zoom-in" class="small-btn" aria-label="拡大" title="拡大">🔍＋</button>
+        </div>
+
+        <div id="timeline-dropzone" class="timeline-dropzone">
+          <div id="empty-state" class="empty-state">
+            <div class="empty-icon" aria-hidden="true">🎵</div>
+            <p class="empty-title">MP3をここへドラッグ＆ドロップ</p>
+            <p class="empty-sub">またはクリックしてファイルを選択（複数選択可）</p>
+            <p class="empty-formats">対応形式: MP3 / WAV / OGG / M4A / AAC / WebM</p>
+          </div>
+          <div id="ruler" class="ruler" aria-hidden="true"></div>
+          <div id="tracks-container" class="tracks-container"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="transport-bar" role="contentinfo" aria-label="再生コントロール">
+      <div class="transport-left">
+        <button id="btn-home" class="tbtn" aria-label="先頭へ" title="先頭へ (Home)">⏮</button>
+        <button id="btn-play" class="tbtn tbtn-big" aria-label="再生">▶ 再生</button>
+        <button id="btn-pause" class="tbtn tbtn-big" aria-label="一時停止" style="display:none">⏸ 一時停止</button>
+        <button id="btn-stop" class="tbtn" aria-label="停止" title="停止">■ 停止</button>
+        <button id="btn-end" class="tbtn" aria-label="末尾へ" title="末尾へ (End)">⏭</button>
+      </div>
+      <div class="transport-center">
+        <span id="time-current" class="time-display">00:00.0</span>
+        <span class="time-sep">/</span>
+        <span id="time-total" class="time-display">00:00.0</span>
+        <span id="next-track-label" class="next-track-label"></span>
+      </div>
+      <div class="transport-right">
+        <label class="small-label">BGM <input id="bgm-volume" type="range" min="-40" max="12" value="0" class="range-input" /></label>
+        <label class="small-label">効果音 <input id="sfx-volume" type="range" min="-40" max="12" value="0" class="range-input" /></label>
+        <label class="small-label">マスター <input id="master-volume" type="range" min="-40" max="12" value="0" class="range-input" /></label>
+        <button id="btn-mute" class="tbtn" aria-label="ミュート" title="ミュート">🔊</button>
+      </div>
+    </footer>
+
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <div id="export-modal" class="modal-overlay" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="export-title">
+        <h2 id="export-title">💿 書き出し</h2>
+        <div class="modal-body">
+          <section class="export-option">
+            <h3>CD用に書き出す</h3>
+            <p>WAV / 44,100Hz / 16bit / ステレオ の CD用音源として、プロジェクト全体を1本のファイルに書き出します。</p>
+            <button id="btn-export-cd" class="tbtn tbtn-primary">💿 CD用WAVを書き出す</button>
+          </section>
+          <section class="export-option">
+            <h3>曲ごとに書き出す</h3>
+            <p>セットリストに登録された曲を、それぞれ別のWAVファイルとして書き出します。</p>
+            <button id="btn-export-tracks" class="tbtn">🎵 曲ごとに書き出す（個別）</button>
+            <button id="btn-export-tracks-zip" class="tbtn">🗂 曲ごとに書き出す（ZIPでまとめる）</button>
+          </section>
+          <div id="export-progress" class="export-progress" hidden>
+            <div class="progress-bar"><div id="export-progress-bar" class="progress-bar-fill"></div></div>
+            <p id="export-progress-label">書き出し中…</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-export-close" class="tbtn">閉じる</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="help-modal" class="modal-overlay" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="help-title">
+        <h2 id="help-title">❓ キーボードショートカット</h2>
+        <div class="modal-body">
+          <table class="shortcut-table">
+            <tbody>
+              <tr><td><kbd>Space</kbd></td><td>再生 / 一時停止</td></tr>
+              <tr><td><kbd>S</kbd></td><td>再生ヘッド位置で分割</td></tr>
+              <tr><td><kbd>Delete</kbd></td><td>選択中のクリップを削除</td></tr>
+              <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>元に戻す (Undo)</td></tr>
+              <tr><td><kbd>Ctrl</kbd>+<kbd>Y</kbd></td><td>やり直す (Redo)</td></tr>
+              <tr><td><kbd>Ctrl</kbd>+<kbd>S</kbd></td><td>保存</td></tr>
+              <tr><td><kbd>Ctrl</kbd>+<kbd>O</kbd></td><td>ファイル追加</td></tr>
+              <tr><td><kbd>Home</kbd></td><td>タイムライン先頭へ</td></tr>
+              <tr><td><kbd>End</kbd></td><td>タイムライン末尾へ</td></tr>
+              <tr><td><kbd>+</kbd> / <kbd>-</kbd></td><td>拡大 / 縮小</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-help-close" class="tbtn">閉じる</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="restore-modal" class="modal-overlay" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="restore-title">
+        <h2 id="restore-title">🔄 前回の編集データがあります</h2>
+        <div class="modal-body">
+          <p>前回アプリを閉じたときの自動バックアップが見つかりました。復元しますか？</p>
+          <p id="restore-info" class="restore-info"></p>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-restore-discard" class="tbtn">破棄して新規作成</button>
+          <button id="btn-restore-confirm" class="tbtn tbtn-primary">復元する</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="performance-mode" class="performance-mode" hidden>
+      <button id="btn-perform-exit" class="perform-exit" aria-label="本番モードを終了">✕ 編集画面へ戻る</button>
+      <div class="perform-body">
+        <h1 class="perform-title">文化祭 ダンス音源</h1>
+        <div id="perform-next" class="perform-next"></div>
+        <div class="perform-time">
+          <span id="perform-current">00:00</span>
+          <span class="perform-time-sep">/</span>
+          <span id="perform-total">00:00</span>
+        </div>
+        <div id="perform-countdown" class="perform-countdown" hidden></div>
+        <div class="perform-controls">
+          <button id="perform-play" class="perform-btn perform-btn-play" aria-label="再生">▶</button>
+          <button id="perform-pause" class="perform-btn" aria-label="一時停止" style="display:none">⏸</button>
+          <button id="perform-stop" class="perform-btn" aria-label="停止">■</button>
+          <button id="perform-countdown-btn" class="perform-btn" aria-label="カウントダウン開始">⏱ カウントダウン</button>
+        </div>
+        <label class="perform-countdown-setting">
+          カウント秒数
+          <input id="perform-countdown-seconds" type="number" min="1" max="10" value="5" />
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

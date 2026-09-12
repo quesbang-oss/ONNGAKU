@@ -1,0 +1,173 @@
+/* ===== トランスポートバー（下部の再生コントロール） ===== */
+
+.transport-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 16px;
+  background: var(--panel-bg);
+  border-top: 1px solid var(--panel-border);
+  flex-wrap: wrap;
+}
+
+.transport-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.transport-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.time-display {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.time-sep { color: var(--text-muted); }
+
+.next-track-label {
+  margin-left: 10px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.transport-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* ===== 本番モード ===== */
+
+.performance-mode {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: linear-gradient(160deg, #1B1A17 0%, #2E2A22 100%);
+  color: #FFF7E8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.perform-exit {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.08);
+  color: #FFF7E8;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.perform-exit:hover { background: rgba(255,255,255,0.18); }
+
+.perform-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  text-align: center;
+  padding: 24px;
+}
+
+.perform-title {
+  font-size: clamp(28px, 5vw, 52px);
+  font-weight: 900;
+  margin: 0;
+  letter-spacing: 0.02em;
+  color: #FF8A66;
+}
+
+.perform-next {
+  font-size: 18px;
+  font-weight: 700;
+  min-height: 24px;
+  color: #FFE3D8;
+}
+
+.perform-time {
+  font-size: clamp(40px, 9vw, 88px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.perform-time-sep { opacity: 0.5; font-size: 0.5em; }
+
+.perform-countdown {
+  font-size: clamp(80px, 18vw, 180px);
+  font-weight: 900;
+  color: #FF6B4A;
+  line-height: 1;
+  animation: perform-pulse 1s ease infinite;
+}
+
+@keyframes perform-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.perform-controls {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 8px;
+}
+
+.perform-btn {
+  border: 2px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.08);
+  color: #FFF7E8;
+  border-radius: 999px;
+  width: 84px;
+  height: 84px;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.08s ease, background 0.15s ease;
+}
+.perform-btn:hover { background: rgba(255,255,255,0.2); }
+.perform-btn:active { transform: scale(0.94); }
+
+.perform-btn-play {
+  background: var(--accent, #FF6B4A);
+  border-color: var(--accent-strong, #E5502F);
+  width: 104px;
+  height: 104px;
+  font-size: 38px;
+}
+.perform-btn-play:hover { background: var(--accent-strong, #E5502F); }
+
+.perform-countdown-setting {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #C9BFA9;
+  font-weight: 600;
+}
+.perform-countdown-setting input {
+  width: 56px;
+  padding: 5px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.08);
+  color: #FFF7E8;
+  text-align: center;
+}
