@@ -5,7 +5,6 @@ import {
   ZOOM_STEP_FACTOR,
   TRACK_HEIGHT,
   RULER_HEIGHT,
-  TRACK_HEADER_WIDTH,
   TRACK_TYPE,
   TRACK_TYPE_LABEL,
   CLIP_COLORS,
@@ -59,8 +58,10 @@ export class Timeline {
   }
 
   setPlayheadTime(t) {
-    this.playheadTime = t;
-    this._updatePlayheadEl();
+    this.playheadTime = Math.max(0, t);
+    if (this.playheadEl && this.rulerEl.style.display !== 'none') {
+      this._updatePlayheadEl();
+    }
   }
 
   scrollToTime(t) {
@@ -70,7 +71,12 @@ export class Timeline {
   render() {
     const project = this.getProject();
     const hasAnyClip = project.tracks.some((t) => t.clips.length > 0);
+
+    // 音源が1つもない間は、ルーラー・トラック・再生ヘッドを完全に隠す。
+    // 音源が追加されたら同じ要素をそのまま再表示する。
     this.emptyStateEl.style.display = hasAnyClip ? 'none' : 'flex';
+    this.rulerEl.style.display = hasAnyClip ? '' : 'none';
+    this.tracksContainerEl.style.display = hasAnyClip ? '' : 'none';
 
     const totalDuration = Math.max(30, project.duration + 20);
     const contentWidth = Math.max(this.dropzoneEl.clientWidth, totalDuration * this.pixelsPerSecond);
@@ -78,16 +84,21 @@ export class Timeline {
     this._renderRuler(contentWidth, totalDuration);
     this._renderTracks(project, contentWidth);
     this._ensurePlayheadEl();
-    this._updatePlayheadEl();
+
+    // 再生ヘッドも音源追加前は表示しない。
+    if (this.playheadEl) {
+      this.playheadEl.style.display = hasAnyClip ? '' : 'none';
+    }
+
+    if (hasAnyClip) {
+      this._updatePlayheadEl();
+    }
   }
 
   // ---------------- ルーラー ----------------
 
   _renderRuler(width, totalDuration) {
-    // ルーラーの0秒を、BGM波形の左端（トラックヘッダーの右側）に合わせる。
-    // 音声データや再生時刻そのものは変更せず、表示位置だけを補正する。
     this.rulerEl.style.width = `${width}px`;
-    this.rulerEl.style.marginLeft = `${TRACK_HEADER_WIDTH}px`;
     this.rulerEl.innerHTML = '';
     const canvas = document.createElement('canvas');
     const dpr = window.devicePixelRatio || 1;
@@ -402,10 +413,7 @@ export class Timeline {
 
   _updatePlayheadEl() {
     if (!this.playheadEl) return;
-    // 0秒より前には再生ヘッドを置かない。
-    // トラックヘッダー分だけ表示上の原点を右へずらし、波形の左端＝0秒にする。
-    const clampedTime = Math.max(0, this.playheadTime);
-    this.playheadEl.style.left = `${TRACK_HEADER_WIDTH + clampedTime * this.pixelsPerSecond}px`;
+    this.playheadEl.style.left = `${this.playheadTime * this.pixelsPerSecond}px`;
   }
 }
 
