@@ -59,9 +59,10 @@
   justify-content: center;
 }
 
-/* hidden 属性が付いているときは、本番モードを確実に非表示にして編集画面を表示する */
+/* hidden 属性が付いた本番モードは、CSSの display:flex より優先して非表示にする。
+   これにより起動直後は通常の編集画面が表示され、終了時も編集画面へ戻れる。 */
 .performance-mode[hidden] {
-  display: none;
+  display: none !important;
 }
 
 .perform-exit {
@@ -113,6 +114,7 @@
 .perform-time-sep { opacity: 0.5; font-size: 0.5em; }
 
 .perform-countdown {
+  /* カウントダウン専用の枠。大きな数字でも画面からはみ出さない */
   width: min(80vw, 520px);
   height: min(30vh, 220px);
   box-sizing: border-box;
