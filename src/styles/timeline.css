@@ -135,7 +135,7 @@
   border: 3px dashed var(--panel-border);
   margin: 16px;
   border-radius: 16px;
-  z-index: 5;
+  z-index: 0;
 }
 
 .empty-icon { font-size: 52px; }
@@ -153,6 +153,8 @@
 .tracks-container {
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 1;
 }
 
 .marker-row {
@@ -232,25 +234,4 @@
   background: var(--danger);
   pointer-events: none;
   z-index: 4;
-}
-
-/* MP3ドラッグ&ドロップ案内をタイムラインの裏側へ */
-.timeline-drop-zone,
-.drop-zone,
-.audio-drop-zone,
-.import-drop-zone {
-  z-index: 0 !important;
-  pointer-events: none;
-}
-
-.timeline,
-.timeline-content,
-.timeline-tracks,
-.timeline-ruler,
-.timeline-clip,
-.timeline-item,
-.track,
-.track-content {
-  position: relative;
-  z-index: 1;
 }
