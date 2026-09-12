@@ -5,6 +5,7 @@ import {
   ZOOM_STEP_FACTOR,
   TRACK_HEIGHT,
   RULER_HEIGHT,
+  TRACK_HEADER_WIDTH,
   TRACK_TYPE,
   TRACK_TYPE_LABEL,
   CLIP_COLORS,
@@ -71,9 +72,6 @@ export class Timeline {
   render() {
     const project = this.getProject();
     const hasAnyClip = project.tracks.some((t) => t.clips.length > 0);
-
-    // 音源が1つもない間は、ルーラー・トラック・再生ヘッドを完全に隠す。
-    // 音源が追加されたら同じ要素をそのまま再表示する。
     this.emptyStateEl.style.display = hasAnyClip ? 'none' : 'flex';
     this.rulerEl.style.display = hasAnyClip ? '' : 'none';
     this.tracksContainerEl.style.display = hasAnyClip ? '' : 'none';
@@ -84,12 +82,9 @@ export class Timeline {
     this._renderRuler(contentWidth, totalDuration);
     this._renderTracks(project, contentWidth);
     this._ensurePlayheadEl();
-
-    // 再生ヘッドも音源追加前は表示しない。
     if (this.playheadEl) {
       this.playheadEl.style.display = hasAnyClip ? '' : 'none';
     }
-
     if (hasAnyClip) {
       this._updatePlayheadEl();
     }
@@ -98,20 +93,21 @@ export class Timeline {
   // ---------------- ルーラー ----------------
 
   _renderRuler(width, totalDuration) {
-    this.rulerEl.style.width = `${width}px`;
+    const rulerWidth = width + TRACK_HEADER_WIDTH;
+    this.rulerEl.style.width = `${rulerWidth}px`;
     this.rulerEl.innerHTML = '';
     const canvas = document.createElement('canvas');
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = width * dpr;
+    canvas.width = rulerWidth * dpr;
     canvas.height = RULER_HEIGHT * dpr;
-    canvas.style.width = `${width}px`;
+    canvas.style.width = `${rulerWidth}px`;
     canvas.style.height = `${RULER_HEIGHT}px`;
     const ctx = canvas.getContext('2d');
     ctx.scale(dpr, dpr);
 
     ctx.fillStyle = 'var(--ruler-bg, #e9edf5)';
     ctx.fillStyle = getCssVar('--ruler-bg', '#e9edf5');
-    ctx.fillRect(0, 0, width, RULER_HEIGHT);
+    ctx.fillRect(0, 0, rulerWidth, RULER_HEIGHT);
 
     const interval = niceInterval(this.pixelsPerSecond);
     ctx.strokeStyle = getCssVar('--ruler-tick', '#9aa5b8');
@@ -120,7 +116,7 @@ export class Timeline {
     ctx.textBaseline = 'middle';
 
     for (let t = 0; t <= totalDuration; t += interval) {
-      const x = t * this.pixelsPerSecond;
+      const x = TRACK_HEADER_WIDTH + t * this.pixelsPerSecond;
       ctx.beginPath();
       ctx.moveTo(x + 0.5, RULER_HEIGHT - 10);
       ctx.lineTo(x + 0.5, RULER_HEIGHT);
@@ -130,7 +126,7 @@ export class Timeline {
 
     canvas.addEventListener('pointerdown', (e) => {
       const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
+      const x = e.clientX - rect.left - TRACK_HEADER_WIDTH;
       const time = Math.max(0, x / this.pixelsPerSecond);
       this.callbacks.onSeek(time);
     });
@@ -413,7 +409,8 @@ export class Timeline {
 
   _updatePlayheadEl() {
     if (!this.playheadEl) return;
-    this.playheadEl.style.left = `${this.playheadTime * this.pixelsPerSecond}px`;
+    const time = Math.max(0, this.playheadTime);
+    this.playheadEl.style.left = `${TRACK_HEADER_WIDTH + time * this.pixelsPerSecond}px`;
   }
 }
 
