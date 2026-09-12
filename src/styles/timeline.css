@@ -148,6 +148,8 @@
   top: 0;
   z-index: 3;
   height: 28px;
+  /* Timeline.js が設定する margin-left: 120px と合わせて、
+     ルーラーの0秒をBGM波形の左端に表示する。 */
 }
 
 .tracks-container {
@@ -226,6 +228,8 @@
 
 .playhead-line {
   position: absolute;
+  /* 0秒の表示原点はトラックヘッダーの右端。左側へは出さない。 */
+  left: 120px;
   top: 0;
   bottom: 0;
   width: 2px;
