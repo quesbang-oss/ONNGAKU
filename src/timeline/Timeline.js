@@ -5,6 +5,7 @@ import {
   ZOOM_STEP_FACTOR,
   TRACK_HEIGHT,
   RULER_HEIGHT,
+  TRACK_HEADER_WIDTH,
   TRACK_TYPE,
   TRACK_TYPE_LABEL,
   CLIP_COLORS,
@@ -83,7 +84,10 @@ export class Timeline {
   // ---------------- ルーラー ----------------
 
   _renderRuler(width, totalDuration) {
+    // ルーラーの0秒を、BGM波形の左端（トラックヘッダーの右側）に合わせる。
+    // 音声データや再生時刻そのものは変更せず、表示位置だけを補正する。
     this.rulerEl.style.width = `${width}px`;
+    this.rulerEl.style.marginLeft = `${TRACK_HEADER_WIDTH}px`;
     this.rulerEl.innerHTML = '';
     const canvas = document.createElement('canvas');
     const dpr = window.devicePixelRatio || 1;
@@ -398,7 +402,10 @@ export class Timeline {
 
   _updatePlayheadEl() {
     if (!this.playheadEl) return;
-    this.playheadEl.style.left = `${this.playheadTime * this.pixelsPerSecond}px`;
+    // 0秒より前には再生ヘッドを置かない。
+    // トラックヘッダー分だけ表示上の原点を右へずらし、波形の左端＝0秒にする。
+    const clampedTime = Math.max(0, this.playheadTime);
+    this.playheadEl.style.left = `${TRACK_HEADER_WIDTH + clampedTime * this.pixelsPerSecond}px`;
   }
 }
 
